@@ -44,10 +44,11 @@ const AboutPage: React.FC = () => {
         >
             <h2 className="text-center font-heading text-3xl md:text-4xl font-bold mb-12">Our Team</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <TeamCard name="Kwesi Vanguard" role="Founder & CEO" imageUrl="https://picsum.photos/seed/t1/200" />
-                <TeamCard name="Amina Coder" role="Lead Engineer" imageUrl="https://picsum.photos/seed/t2/200" />
-                <TeamCard name="Jabari Vision" role="Creative Director" imageUrl="https://picsum.photos/seed/t3/200" />
-                <TeamCard name="Nia Connector" role="Community Manager" imageUrl="https://picsum.photos/seed/t4/200" />
+                <TeamCard name="ABUDHABI" role="Smart-Contract Engineer" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761752167/Azqui_iclgcc.jpg" />
+                <TeamCard name="Muhammed Oluwafemi 
+" role="Product Manager" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/productmanager_wvaozf.jpg" />
+                <TeamCard name="Abimbola obafisayo" role="Frontend Engineer" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/frontenddeveloper_p7kesf.jpg" />
+                <TeamCard name="Mr. Jay" role="Backend Engineer" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/backendDeveloper_upf7kr.jpg" />
             </div>
         </motion.div>
         
