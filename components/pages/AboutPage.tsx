@@ -49,6 +49,7 @@ const AboutPage: React.FC = () => {
 " role="Product Manager" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/productmanager_wvaozf.jpg" />
                 <TeamCard name="Abimbola obafisayo" role="Frontend Engineer" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/frontenddeveloper_p7kesf.jpg" />
                 <TeamCard name="Mr. Jay" role="Backend Engineer" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/backendDeveloper_upf7kr.jpg" />
+                <TeamCard name="Dr. Jane" role="AI Researcher" imageUrl="https://res.cloudinary.com/dwiewdn6f/image/upload/v1761751966/ai researcher_zm9qrs.jpg" />
             </div>
         </motion.div>
         

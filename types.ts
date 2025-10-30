@@ -2,7 +2,7 @@
 // FIX: Changed `import type` to `import` to ensure proper JSX type augmentation and resolve widespread intrinsic element errors.
 import * as React from 'react';
 
-export type Page = 'home' | 'explore' | 'mint' | 'detail' | 'dashboard' | 'about';
+export type Page = 'home' | 'explore' | 'mint' | 'detail' | 'dashboard' | 'about' | 'marketplace' | 'create-collection';
 
 export interface NFT {
   id: number;

@@ -1,5 +1,4 @@
 import React, { useState, createContext, useContext, useEffect, useMemo } from 'react';
-// FIX: Changed import type to ensure types.ts is evaluated for its global declarations.
 import { Page } from './types';
 import Navbar from './components/ui/Navbar';
 import Footer from './components/ui/Footer';
@@ -9,9 +8,12 @@ import MintPage from './components/pages/MintPage';
 import DetailPage from './components/pages/DetailPage';
 import DashboardPage from './components/pages/DashboardPage';
 import AboutPage from './components/pages/AboutPage';
+import MarketplacePage from './components/pages/MarketplacePage';
+import CreateCollectionPage from './components/pages/CreateCollectionPage';
 import WalletConnectModal from './components/ui/WalletConnectModal';
 import ChatBot from './components/ui/ChatBot';
 import { motion, AnimatePresence } from 'framer-motion';
+import { disconnectWallet, getWalletState } from './services/walletService';
 
 // Page Navigation Context
 interface PageContextType {
@@ -62,6 +64,15 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedNftId, setSelectedNftId] = useState<number | null>(null);
   const [isWalletModalOpen, setWalletModalOpen] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  
+  // Initialize wallet state
+  useEffect(() => {
+    const walletState = getWalletState();
+    if (walletState.isConnected && walletState.address) {
+      setWalletAddress(walletState.address);
+    }
+  }, []);
   
   const pageContextValue = {
     currentPage,
@@ -81,9 +92,17 @@ const App: React.FC = () => {
 
   const pageTransition = {
     type: "tween" as const,
-    // FIX: Corrected Framer Motion type error by adding `as const` to the ease array.
     ease: [0.4, 0, 0.2, 1] as const,
     duration: 0.5
+  };
+
+  const handleWalletConnected = (address: string) => {
+    setWalletAddress(address);
+  };
+
+  const handleDisconnectWallet = () => {
+    disconnectWallet();
+    setWalletAddress(null);
   };
 
   const renderPage = () => {
@@ -94,6 +113,8 @@ const App: React.FC = () => {
       case 'detail': return <DetailPage />;
       case 'dashboard': return <DashboardPage />;
       case 'about': return <AboutPage />;
+      case 'marketplace': return <MarketplacePage />;
+      case 'create-collection': return <CreateCollectionPage />;
       default: return <HomePage />;
     }
   };
@@ -102,7 +123,11 @@ const App: React.FC = () => {
     <ThemeProvider>
       <PageContext.Provider value={pageContextValue}>
         <div className="min-h-screen">
-          <Navbar onConnectWallet={() => setWalletModalOpen(true)} />
+          <Navbar 
+            onConnectWallet={() => setWalletModalOpen(true)} 
+            walletAddress={walletAddress}
+            onDisconnectWallet={handleDisconnectWallet}
+          />
           <main className="pt-20">
             <AnimatePresence mode="wait">
               <motion.div
@@ -121,6 +146,7 @@ const App: React.FC = () => {
           <WalletConnectModal
             isOpen={isWalletModalOpen}
             onClose={() => setWalletModalOpen(false)}
+            onWalletConnected={handleWalletConnected}
           />
           <ChatBot />
         </div>

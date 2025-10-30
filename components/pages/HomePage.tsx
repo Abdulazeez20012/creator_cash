@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 // FIX: Import types to load global JSX definitions for custom elements like 'dotlottie-player'.
 import '../../types';
 import { usePage } from '../../App';
@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
   const { setCurrentPage } = usePage();
   const collectionsRef = useRef(null);
   const collectionsInView = useInView(collectionsRef, { once: true, margin: "-100px 0px" });
-
+  const [lottieError, setLottieError] = useState(false);
 
   const staggerContainer = {
     hidden: {},
@@ -48,12 +48,32 @@ const HomePage: React.FC = () => {
       visible: { y: 0, opacity: 1 }
   };
 
+  // Handle Lottie player error
+  useEffect(() => {
+    const handleError = () => {
+      setLottieError(true);
+    };
+
+    // Add error listener to Lottie player if it exists
+    const lottiePlayer = document.querySelector('dotlottie-player');
+    if (lottiePlayer) {
+      lottiePlayer.addEventListener('error', handleError);
+    }
+
+    return () => {
+      if (lottiePlayer) {
+        lottiePlayer.removeEventListener('error', handleError);
+      }
+    };
+  }, []);
+
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
       <div className="relative min-h-screen flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--background)] z-10"></div>
         <div className="absolute inset-0 opacity-20 dark:opacity-30">
+          {!lottieError ? (
             <dotlottie-player
                 src="https://lottie.host/8051e737-1845-4246-953a-1430030c6a99/65W6E4J9b1.lottie"
                 background="transparent"
@@ -61,7 +81,12 @@ const HomePage: React.FC = () => {
                 style={{ width: '100%', height: '100%' }}
                 loop
                 autoplay
+                onError={() => setLottieError(true)}
             ></dotlottie-player>
+          ) : (
+            // Fallback background if Lottie fails to load
+            <div className="w-full h-full bg-gradient-to-br from-[var(--brand-gold)]/10 via-[var(--brand-green)]/10 to-[var(--brand-blue)]/10"></div>
+          )}
         </div>
         <motion.div 
             initial="hidden"

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { usePage, useTheme } from '../../App';
 import type { Page } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Wallet, AlertTriangle } from 'lucide-react';
 import { Logo } from './Logo';
+import { getWalletState, canPerformTransactions } from '../../services/walletService';
 
 interface NavbarProps {
   onConnectWallet: () => void;
+  walletAddress: string | null;
+  onDisconnectWallet: () => void;
 }
 
 const NavLink: React.FC<{ page: Page; children: React.ReactNode }> = ({ page, children }) => {
@@ -142,7 +145,7 @@ const ThemeToggle: React.FC = () => {
     );
 };
 
-const Navbar: React.FC<NavbarProps> = ({ onConnectWallet }) => {
+const Navbar: React.FC<NavbarProps> = ({ onConnectWallet, walletAddress, onDisconnectWallet }) => {
   const { setCurrentPage } = usePage();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -157,15 +160,21 @@ const Navbar: React.FC<NavbarProps> = ({ onConnectWallet }) => {
   
   const toggleMenu = () => setIsOpen(!isOpen);
   
+  const formatAddress = (address: string | null) => {
+    if (!address) return '';
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
+  
   const mobileMenuVariants = {
     hidden: { opacity: 0, y: '-100%' },
-    // FIX: Corrected Framer Motion type error by using `as const` on the ease array.
     visible: { opacity: 1, y: '0%', transition: { duration: 0.4, ease: [0.25, 1, 0.5, 1] as const } },
-    // FIX: Corrected Framer Motion type error by casting ease string to a literal type.
     exit: { opacity: 0, y: '-100%', transition: { duration: 0.3, ease: 'easeOut' as const } },
   };
 
-
+  // Get wallet state to check if it's a manual connection
+  const walletState = getWalletState();
+  const canTransact = canPerformTransactions();
+  
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[var(--navbar-bg)] backdrop-blur-lg border-b border-[var(--border-color)]' : 'bg-transparent'}`}>
@@ -180,6 +189,7 @@ const Navbar: React.FC<NavbarProps> = ({ onConnectWallet }) => {
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
                 <NavLink page="explore">Explore</NavLink>
+                <NavLink page="marketplace">Marketplace</NavLink>
                 <NavLink page="mint">Mint NFT</NavLink>
                 <NavLink page="dashboard">Dashboard</NavLink>
                 <NavLink page="about">About</NavLink>
@@ -187,12 +197,30 @@ const Navbar: React.FC<NavbarProps> = ({ onConnectWallet }) => {
             </div>
             <div className="hidden md:flex items-center gap-4">
                <ThemeToggle />
+               {walletAddress ? (
+                <div className="relative group">
+                  <button className="px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl hover:border-[var(--brand-green)] transition-colors duration-300 flex items-center gap-2">
+                    <Wallet size={16} />
+                    {formatAddress(walletAddress)}
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    <button 
+                      onClick={onDisconnectWallet}
+                      className="block w-full text-left px-4 py-3 text-sm hover:bg-[var(--border-color)] transition-colors"
+                    >
+                      Disconnect Wallet
+                    </button>
+                  </div>
+                </div>
+               ) : (
                <button 
                 onClick={onConnectWallet} 
-                className="px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)] bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl hover:border-[var(--brand-green)] transition-colors duration-300 transform hover:scale-105"
+                className="px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)] bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl hover:border-[var(--brand-green)] transition-colors duration-300 transform hover:scale-105 flex items-center gap-2"
                >
+                <Wallet size={16} />
                 Connect Wallet
               </button>
+               )}
             </div>
             <div className="md:hidden flex items-center">
               <ThemeToggle />
@@ -201,6 +229,13 @@ const Navbar: React.FC<NavbarProps> = ({ onConnectWallet }) => {
               </button>
             </div>
           </div>
+          {/* Warning for manual connection */}
+          {walletState.isConnected && !canTransact && (
+            <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-2 rounded-lg text-sm flex items-center gap-2 mx-4 mb-2">
+              <AlertTriangle size={16} />
+              <span>Read-only mode. Connect with HashPack for full functionality.</span>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -216,14 +251,38 @@ const Navbar: React.FC<NavbarProps> = ({ onConnectWallet }) => {
             <div className="h-full flex flex-col justify-center items-center px-8 pt-20">
               <div className="flex flex-col items-center space-y-6 text-center">
                 <MobileNavLink page="explore" onClick={toggleMenu}>Explore</MobileNavLink>
+                <MobileNavLink page="marketplace" onClick={toggleMenu}>Marketplace</MobileNavLink>
                 <MobileNavLink page="mint" onClick={toggleMenu}>Mint NFT</MobileNavLink>
                 <MobileNavLink page="dashboard" onClick={toggleMenu}>Dashboard</MobileNavLink>
                 <MobileNavLink page="about" onClick={toggleMenu}>About</MobileNavLink>
+                {walletAddress ? (
+                  <div className="mt-8 w-full space-y-4">
+                    <div className="px-6 py-4 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl">
+                      <p className="text-sm text-[var(--text-secondary)]">Connected Wallet</p>
+                      <p className="font-mono text-[var(--text-primary)]">{formatAddress(walletAddress)}</p>
+                    </div>
+                    {/* Warning for manual connection in mobile menu */}
+                    {!canTransact && (
+                      <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                        <AlertTriangle size={16} />
+                        <span>Read-only mode. Connect with HashPack for full functionality.</span>
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => { onDisconnectWallet(); toggleMenu(); }}
+                      className="w-full px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-red-500 to-red-700 rounded-2xl hover:opacity-90 transition-opacity duration-300"
+                    >
+                      Disconnect Wallet
+                    </button>
+                  </div>
+                ) : (
                  <button onClick={() => { onConnectWallet(); toggleMenu(); }} 
-                 className="mt-8 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-[var(--brand-gold)] via-[var(--brand-green)] to-[var(--brand-blue)] rounded-2xl hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-[var(--shadow-color-rgb)]/30"
+                 className="mt-8 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-[var(--brand-gold)] via-[var(--brand-green)] to-[var(--brand-blue)] rounded-2xl hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-[var(--shadow-color-rgb)]/30 flex items-center justify-center gap-2"
                  >
+                  <Wallet size={20} />
                   Connect Wallet
                 </button>
+                )}
               </div>
             </div>
           </motion.div>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { usePage } from '../../App';
 import NFTCard from '../ui/NFTCard';
 import { MOCK_NFTS } from '../../constants';
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, ShoppingCart } from 'lucide-react';
 
 const FilterSidebar: React.FC = () => {
     return (
@@ -41,11 +42,24 @@ const FilterSidebar: React.FC = () => {
 
 
 const ExplorePage: React.FC = () => {
+    const { setCurrentPage } = usePage();
     const [layout, setLayout] = useState('grid');
+    
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">Explore NFTs</h1>
-      <p className="text-lg text-[var(--text-secondary)] mb-12">Discover the pulse of African creativity.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div>
+          <h1 className="font-heading text-4xl md:text-5xl font-bold mb-2">Explore NFTs</h1>
+          <p className="text-lg text-[var(--text-secondary)]">Discover the pulse of African creativity.</p>
+        </div>
+        <button 
+          onClick={() => setCurrentPage('marketplace')}
+          className="mt-4 md:mt-0 flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[var(--brand-gold)] via-[var(--brand-green)] to-[var(--brand-blue)] text-white rounded-2xl hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-[var(--shadow-color-rgb)]/30"
+        >
+          <ShoppingCart size={20} />
+          View Marketplace
+        </button>
+      </div>
       
       <div className="flex flex-col lg:flex-row gap-8">
         <aside className="w-full lg:w-72">
