@@ -111,8 +111,10 @@ Contributions are welcome! Please fork the repository and submit pull requests.
 For support, please open an issue on GitHub or contact the development team.
 
 
-here is the Pitch Deck :- [creatorcash presentaion deck](CreatorCash.pdf)
-here is the deployed project :- (creator-cash.vercel.app/)
+- here is the Pitch Deck :- [creatorcash presentaion deck](https://drive.google.com/file/d/1TMM8HOoUVNPHBHCLpFdMM42swFCfeDhP/view?usp=sharing)
+- here is the deployed project :- [creatorscash](https://creator-cash.vercel.app/)
+- here is the certificate :- [hedera hashgraph certificate](https://drive.google.com/file/d/1TAjiAJvjMXMLOK4YzyoqjM6rCE3R3YSW/view?usp=sharing)
+- here is the demo video :- [demo video](https://drive.google.com/file/d/1hH6Bk_HTIKvlJO9y5nKWUgDwiciRCJz0/view?usp=sharing)
 
 
 1. Install dependencies:
